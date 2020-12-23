@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  nginx_proxy:
+    build:
+      context: ./nginx-reverse-proxy
+      dockerfile: Dockerfile
+    volumes:
+      - ./nginx-reverse-proxy/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    depends_on:
+      - flask_app
+  
+  nginx_static:
+    build:
+      context: ./nginx-static
+      dockerfile: Dockerfile
+    ports:
+      - 81:81
+    volumes:
+      - ./images:/srv
+    
+  flask_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    depends_on:
+      - redis
+   
+  redis:
+    image: redis:latest
